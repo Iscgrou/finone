@@ -3,7 +3,13 @@ import {
   invoices, 
   payments, 
   fileImports,
-  users, 
+  users,
+  settings,
+  systemUsers,
+  invoiceTemplates,
+  notifications,
+  analyticsReports,
+  backupLogs,
   type Representative, 
   type InsertRepresentative,
   type Invoice,
@@ -13,10 +19,23 @@ import {
   type FileImport,
   type InsertFileImport,
   type User, 
-  type InsertUser 
+  type InsertUser,
+  type Setting,
+  type InsertSetting,
+  type SystemUser,
+  type InsertSystemUser,
+  type InvoiceTemplate,
+  type InsertInvoiceTemplate,
+  type Notification,
+  type InsertNotification,
+  type AnalyticsReport,
+  type InsertAnalyticsReport,
+  type BackupLog,
+  type InsertBackupLog
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, gte, lte, and, sql } from "drizzle-orm";
+import { eq, desc, gte, lte, and, sql, count, sum } from "drizzle-orm";
+import { parseCSVContent, type RepresentativeUsageData, calculateInvoiceAmount } from "../client/src/lib/file-parser";
 
 export interface IStorage {
   // User methods
@@ -47,8 +66,49 @@ export interface IStorage {
   // File import methods
   createFileImport(fileImport: InsertFileImport): Promise<FileImport>;
   getFileImport(id: number): Promise<FileImport | undefined>;
+  getAllFileImports(): Promise<FileImport[]>;
   updateFileImport(id: number, updates: Partial<InsertFileImport>): Promise<FileImport | undefined>;
   processODSFile(importId: number, fileBuffer: Buffer): Promise<{ processedRows: number; generatedInvoices: number }>;
+
+  // Settings methods
+  getSetting(key: string): Promise<Setting | undefined>;
+  getAllSettings(): Promise<Setting[]>;
+  setSetting(key: string, value: string, type?: string, description?: string): Promise<Setting>;
+  deleteSetting(key: string): Promise<void>;
+
+  // System User methods
+  getAllSystemUsers(): Promise<SystemUser[]>;
+  getSystemUser(id: number): Promise<SystemUser | undefined>;
+  getSystemUserByUsername(username: string): Promise<SystemUser | undefined>;
+  createSystemUser(user: InsertSystemUser): Promise<SystemUser>;
+  updateSystemUser(id: number, user: Partial<InsertSystemUser>): Promise<SystemUser | undefined>;
+  deleteSystemUser(id: number): Promise<void>;
+
+  // Invoice Template methods
+  getAllInvoiceTemplates(): Promise<InvoiceTemplate[]>;
+  getInvoiceTemplate(id: number): Promise<InvoiceTemplate | undefined>;
+  getDefaultInvoiceTemplate(): Promise<InvoiceTemplate | undefined>;
+  createInvoiceTemplate(template: InsertInvoiceTemplate): Promise<InvoiceTemplate>;
+  updateInvoiceTemplate(id: number, template: Partial<InsertInvoiceTemplate>): Promise<InvoiceTemplate | undefined>;
+  deleteInvoiceTemplate(id: number): Promise<void>;
+
+  // Notification methods
+  getAllNotifications(): Promise<Notification[]>;
+  getNotification(id: number): Promise<Notification | undefined>;
+  getUnreadNotifications(userId?: number): Promise<Notification[]>;
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  markNotificationAsRead(id: number): Promise<void>;
+
+  // Analytics Report methods
+  getAllAnalyticsReports(): Promise<AnalyticsReport[]>;
+  getAnalyticsReport(id: number): Promise<AnalyticsReport | undefined>;
+  createAnalyticsReport(report: InsertAnalyticsReport): Promise<AnalyticsReport>;
+
+  // Backup Log methods
+  getAllBackupLogs(): Promise<BackupLog[]>;
+  getBackupLog(id: number): Promise<BackupLog | undefined>;
+  createBackupLog(log: InsertBackupLog): Promise<BackupLog>;
+  updateBackupLog(id: number, updates: Partial<InsertBackupLog>): Promise<BackupLog | undefined>;
 
   // Analytics methods
   getDashboardStats(): Promise<{
