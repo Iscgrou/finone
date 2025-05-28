@@ -433,6 +433,177 @@ export class DatabaseStorage implements IStorage {
       activeReps: activeReps[0]?.count || 0,
     };
   }
+  // Settings methods
+  async getSetting(key: string): Promise<Setting | undefined> {
+    const [setting] = await db.select().from(settings).where(eq(settings.key, key));
+    return setting || undefined;
+  }
+
+  async getAllSettings(): Promise<Setting[]> {
+    return await db.select().from(settings).orderBy(settings.key);
+  }
+
+  async setSetting(key: string, value: string, type: string = 'string', description?: string): Promise<Setting> {
+    const existing = await this.getSetting(key);
+    
+    if (existing) {
+      const [updated] = await db
+        .update(settings)
+        .set({ value, type, description, updatedAt: new Date() })
+        .where(eq(settings.key, key))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db
+        .insert(settings)
+        .values({ key, value, type, description })
+        .returning();
+      return created;
+    }
+  }
+
+  async deleteSetting(key: string): Promise<void> {
+    await db.delete(settings).where(eq(settings.key, key));
+  }
+
+  // System User methods
+  async getAllSystemUsers(): Promise<SystemUser[]> {
+    return await db.select().from(systemUsers).orderBy(systemUsers.fullName);
+  }
+
+  async getSystemUser(id: number): Promise<SystemUser | undefined> {
+    const [user] = await db.select().from(systemUsers).where(eq(systemUsers.id, id));
+    return user || undefined;
+  }
+
+  async getSystemUserByUsername(username: string): Promise<SystemUser | undefined> {
+    const [user] = await db.select().from(systemUsers).where(eq(systemUsers.username, username));
+    return user || undefined;
+  }
+
+  async createSystemUser(user: InsertSystemUser): Promise<SystemUser> {
+    const [created] = await db.insert(systemUsers).values(user).returning();
+    return created;
+  }
+
+  async updateSystemUser(id: number, user: Partial<InsertSystemUser>): Promise<SystemUser | undefined> {
+    const [updated] = await db
+      .update(systemUsers)
+      .set({ ...user, updatedAt: new Date() })
+      .where(eq(systemUsers.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async deleteSystemUser(id: number): Promise<void> {
+    await db.delete(systemUsers).where(eq(systemUsers.id, id));
+  }
+
+  // Invoice Template methods
+  async getAllInvoiceTemplates(): Promise<InvoiceTemplate[]> {
+    return await db.select().from(invoiceTemplates).orderBy(invoiceTemplates.name);
+  }
+
+  async getInvoiceTemplate(id: number): Promise<InvoiceTemplate | undefined> {
+    const [template] = await db.select().from(invoiceTemplates).where(eq(invoiceTemplates.id, id));
+    return template || undefined;
+  }
+
+  async getDefaultInvoiceTemplate(): Promise<InvoiceTemplate | undefined> {
+    const [template] = await db.select().from(invoiceTemplates).where(eq(invoiceTemplates.isDefault, true));
+    return template || undefined;
+  }
+
+  async createInvoiceTemplate(template: InsertInvoiceTemplate): Promise<InvoiceTemplate> {
+    const [created] = await db.insert(invoiceTemplates).values(template).returning();
+    return created;
+  }
+
+  async updateInvoiceTemplate(id: number, template: Partial<InsertInvoiceTemplate>): Promise<InvoiceTemplate | undefined> {
+    const [updated] = await db
+      .update(invoiceTemplates)
+      .set({ ...template, updatedAt: new Date() })
+      .where(eq(invoiceTemplates.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async deleteInvoiceTemplate(id: number): Promise<void> {
+    await db.delete(invoiceTemplates).where(eq(invoiceTemplates.id, id));
+  }
+
+  // Notification methods
+  async getAllNotifications(): Promise<Notification[]> {
+    return await db.select().from(notifications).orderBy(desc(notifications.createdAt));
+  }
+
+  async getNotification(id: number): Promise<Notification | undefined> {
+    const [notification] = await db.select().from(notifications).where(eq(notifications.id, id));
+    return notification || undefined;
+  }
+
+  async getUnreadNotifications(userId?: number): Promise<Notification[]> {
+    let query = db.select().from(notifications).where(eq(notifications.isRead, false));
+    
+    if (userId) {
+      query = query.where(and(eq(notifications.isRead, false), eq(notifications.userId, userId)));
+    }
+    
+    return await query.orderBy(desc(notifications.createdAt));
+  }
+
+  async createNotification(notification: InsertNotification): Promise<Notification> {
+    const [created] = await db.insert(notifications).values(notification).returning();
+    return created;
+  }
+
+  async markNotificationAsRead(id: number): Promise<void> {
+    await db.update(notifications).set({ isRead: true }).where(eq(notifications.id, id));
+  }
+
+  // Analytics Report methods
+  async getAllAnalyticsReports(): Promise<AnalyticsReport[]> {
+    return await db.select().from(analyticsReports).orderBy(desc(analyticsReports.createdAt));
+  }
+
+  async getAnalyticsReport(id: number): Promise<AnalyticsReport | undefined> {
+    const [report] = await db.select().from(analyticsReports).where(eq(analyticsReports.id, id));
+    return report || undefined;
+  }
+
+  async createAnalyticsReport(report: InsertAnalyticsReport): Promise<AnalyticsReport> {
+    const [created] = await db.insert(analyticsReports).values(report).returning();
+    return created;
+  }
+
+  // Backup Log methods
+  async getAllBackupLogs(): Promise<BackupLog[]> {
+    return await db.select().from(backupLogs).orderBy(desc(backupLogs.createdAt));
+  }
+
+  async getBackupLog(id: number): Promise<BackupLog | undefined> {
+    const [log] = await db.select().from(backupLogs).where(eq(backupLogs.id, id));
+    return log || undefined;
+  }
+
+  async createBackupLog(log: InsertBackupLog): Promise<BackupLog> {
+    const [created] = await db.insert(backupLogs).values(log).returning();
+    return created;
+  }
+
+  async updateBackupLog(id: number, updates: Partial<InsertBackupLog>): Promise<BackupLog | undefined> {
+    const [updated] = await db
+      .update(backupLogs)
+      .set(updates)
+      .where(eq(backupLogs.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  // Additional File Import methods
+  async getAllFileImports(): Promise<FileImport[]> {
+    return await db.select().from(fileImports).orderBy(desc(fileImports.createdAt));
+  }
 }
 
 export const storage = new DatabaseStorage();
