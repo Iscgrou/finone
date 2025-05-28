@@ -1,12 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import StatsCards from "@/components/dashboard/stats-cards";
 import QuickActions from "@/components/dashboard/quick-actions";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import AINotificationChecklist from "@/components/dashboard/ai-notification-checklist";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { formatPersianNumber, formatPersianCurrency } from "@/lib/persian-utils";
-import { Bell, Users, Receipt, TrendingUp } from "lucide-react";
+import { formatPersianNumber, formatPersianCurrency, formatPersianDateTime } from "@/lib/persian-utils";
+import { 
+  TrendingUp, TrendingDown, Activity, Clock, 
+  DollarSign, Users, FileText, Bot 
+} from "lucide-react";
 
 export default function Dashboard() {
   const { data: stats, isLoading: statsLoading } = useQuery({

@@ -1,7 +1,17 @@
 #!/bin/bash
 
-# VPN Billing System Auto-Installation Script
+# VPN Billing System Auto-Installation Script  
 # Repository: https://github.com/Iscgrou/finone
+# 
+# One-Link Installation: curl -fsSL https://raw.githubusercontent.com/Iscgrou/finone/main/install.sh | bash
+# 
+# This script provides a complete automated installation of the VPN Billing System with:
+# - AI-powered analytics using xAI Grok
+# - Telegram notifications and reporting
+# - Google Drive backup integration  
+# - Invoice template management with PDF/Image output
+# - Multi-user access control system
+# - Persian RTL interface with comprehensive features
 
 set -e  # Exit on any error
 
