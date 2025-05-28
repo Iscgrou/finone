@@ -362,10 +362,14 @@ main() {
 &nbsp;
 &nbsp;
 
-# Check if running as root
+# Check if running as root and adjust accordingly
 if [ "$EUID" -eq 0 ]; then
-    print_error "Please do not run this script as root"
-    exit 1
+    print_warning "Running as root - using /opt/vpn-billing as default directory"
+    DEFAULT_USER="root"
+    DEFAULT_INSTALL_DIR="/opt/vpn-billing"
+else
+    DEFAULT_USER="$USER"
+    DEFAULT_INSTALL_DIR="/home/$USER/vpn-billing"
 fi
 &nbsp;
 &nbsp;
