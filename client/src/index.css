@@ -1,0 +1,207 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 250 20% 99%; /* #FAFAFA */
+  --foreground: 220 13% 13%; /* #212121 */
+  --muted: 210 11% 98%; /* #F5F7FA */
+  --muted-foreground: 220 9% 46%; /* #757575 */
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 13% 13%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 13% 13%;
+  --border: 220 13% 91%; /* #EEEEEE */
+  --input: 220 13% 91%;
+  --primary: 210 79% 46%; /* #1976D2 */
+  --primary-foreground: 0 0% 98%;
+  --secondary: 123 43% 47%; /* #388E3C */
+  --secondary-foreground: 0 0% 98%;
+  --accent: 36 100% 50%; /* #FF9800 */
+  --accent-foreground: 0 0% 98%;
+  --destructive: 4 90% 58%; /* #F44336 */
+  --destructive-foreground: 0 0% 98%;
+  --success: 123 43% 54%; /* #4CAF50 */
+  --warning: 36 100% 50%; /* #FF9800 */
+  --error: 4 90% 58%; /* #F44336 */
+  --ring: 210 79% 46%;
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: 224 71% 4%;
+  --foreground: 213 31% 91%;
+  --muted: 223 47% 11%;
+  --muted-foreground: 215 14% 65%;
+  --popover: 224 71% 4%;
+  --popover-foreground: 213 31% 91%;
+  --card: 224 71% 4%;
+  --card-foreground: 213 31% 91%;
+  --border: 216 34% 17%;
+  --input: 216 34% 17%;
+  --primary: 210 79% 46%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 123 43% 47%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 36 100% 50%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 4 90% 58%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 210 79% 46%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Vazir', 'Tahoma', 'Arial', sans-serif;
+    direction: rtl;
+  }
+
+  html {
+    direction: rtl;
+  }
+
+  /* Persian number styles */
+  .persian-numbers {
+    font-feature-settings: 'kern';
+  }
+
+  /* Custom scrollbar for RTL */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-md;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground;
+  }
+
+  /* RTL specific overrides */
+  [dir="rtl"] .space-x-reverse > * + * {
+    margin-right: 0.5rem;
+    margin-left: 0;
+  }
+
+  /* Form inputs RTL alignment */
+  input[type="number"], 
+  input[inputmode="numeric"],
+  .number-input {
+    direction: ltr;
+    text-align: right;
+  }
+
+  /* Material Icons support */
+  .material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer components {
+  /* Persian UI component styles */
+  .persian-card {
+    @apply bg-card border border-border rounded-xl shadow-sm;
+  }
+
+  .persian-button-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg font-medium transition-colors;
+  }
+
+  .persian-button-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 px-4 py-2 rounded-lg font-medium transition-colors;
+  }
+
+  .persian-input {
+    @apply w-full px-3 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent;
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors;
+  }
+
+  .sidebar-link.active {
+    @apply bg-primary/10 text-primary border-r-4 border-primary;
+  }
+
+  .stat-card {
+    @apply persian-card p-6;
+  }
+
+  .dashboard-grid {
+    @apply grid gap-6;
+  }
+}
+
+@layer utilities {
+  .text-success {
+    color: hsl(var(--success));
+  }
+
+  .text-warning {
+    color: hsl(var(--warning));
+  }
+
+  .text-error {
+    color: hsl(var(--error));
+  }
+
+  .bg-success {
+    background-color: hsl(var(--success));
+  }
+
+  .bg-warning {
+    background-color: hsl(var(--warning));
+  }
+
+  .bg-error {
+    background-color: hsl(var(--error));
+  }
+
+  .bg-success\/10 {
+    background-color: hsl(var(--success) / 0.1);
+  }
+
+  .bg-warning\/10 {
+    background-color: hsl(var(--warning) / 0.1);
+  }
+
+  .bg-error\/10 {
+    background-color: hsl(var(--error) / 0.1);
+  }
+
+  /* RTL utilities */
+  .rtl-flip {
+    transform: scaleX(-1);
+  }
+
+  .ltr {
+    direction: ltr;
+  }
+
+  .rtl {
+    direction: rtl;
+  }
+}
